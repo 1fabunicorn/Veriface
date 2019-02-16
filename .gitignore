@@ -108,4 +108,5 @@ venv.bak/
 # pycharm
 .idea/
 
-
+# Project related testing
+img/
