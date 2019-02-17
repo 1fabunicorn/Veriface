@@ -20,6 +20,9 @@ class Recognizer:
     profile_images = []
     profile_encoders = []
 
+    flag_video = False
+    flag_profile = False
+
     video_path = None
     video_frames = []
     debug = False
@@ -62,6 +65,7 @@ class Recognizer:
         # Checks if the provided image_dir is an existing folder
         if not os.path.isdir(image_dir):
             self.debugPrint("ERROR: Folder not found!")
+            self.flag_profile = False
             return False
 
         self.profile_folder_path = image_dir
@@ -82,6 +86,7 @@ class Recognizer:
                 self.profile_encoders.append(fr.face_encodings(self.profile_images[-1])[0])
 
         self.debugPrint("INFO: " + str(len(self.profile_encoders)) + " images were successfully uploaded.")
+        self.flag_profile = True
         return True
 
     def uploadVideo(self, file_path):
@@ -96,6 +101,7 @@ class Recognizer:
 
         if not os.path.isfile(file_path):
             self.debugPrint("ERROR: Video not found!")
+            self.flag_video = False
             return False
 
         self.video_path = file_path
@@ -110,7 +116,8 @@ class Recognizer:
             ret, frame = video.read()
             self.video_frames.append(frame)
 
-        self.debugPrint("INFO: Video at '" + file_path + "' was uploaded successfully!")
+        self.debugPrint("INFO: Video at '" + file_path + "' was uploaded successfully with " + str(len(self.video_frames)) + " frames!")
+        self.flag_video = True
         return True
 
     def verify(self, showPreview=False):
@@ -127,21 +134,26 @@ class Recognizer:
                 frames_verified (int): The number of frames that detected a face
                 frames_total (int): Total number of frames in video
         """
+        if not self.flag_profile or not self.flag_video:
+            return False
 
-        #Initialize variables to return and initial buffers
+        # Initialize variables to return and initial buffers
         frame_sums = []
         percent = 0
         frames_verified = 0
         frames_total = len(self.video_frames)
         frames_percentages = 0
 
+        scalar = 0.25
+
         face_locations = []
         face_encodings = []
 
+        del self.video_frames[-1]
         # Loops through each frame in the video
         for frame in self.video_frames:
             # Resize frame of video to 1/4 size for faster face recognition processing
-            small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
+            small_frame = cv2.resize(frame, (0, 0), fx=scalar, fy=scalar)
 
             # Convert the image from BGR color (which OpenCV uses) to RGB color (which face_recognition uses)
             rgb_small_frame = small_frame[:, :, ::-1]
@@ -155,25 +167,44 @@ class Recognizer:
             for face_encoding in face_encodings:
                 # See if the face is a match for the known face(s)
                 matches.append(sum(fr.compare_faces(self.profile_encoders, face_encoding)))
-
+                print(len(matches))
             if not matches:
                 frame_sums.append(-1)
             else:
                 frame_sums.append(max(matches))
 
-            self.debugPrint("Frame " + len(frame_sums) + "matches with sum of: " + frame_sums[-1])
+            self.debugPrint("Frame " + str(len(frame_sums)) + " validated at : " + str(frame_sums[-1]) + " / " + str(len(self.profile_encoders))  + " (" + str(frame_sums[-1] / len(self.profile_encoders) * 100) + "%)")
+
+            if showPreview:
+                # Display the results
+                for (top, right, bottom, left) in face_locations:
+                    # Scale back up face locations since the frame we detected in was scaled to 1/4 size
+                    top *= int(1/scalar)
+                    right *= int(1/scalar)
+                    bottom *= int(1/scalar)
+                    left *= int(1/scalar)
+
+                    # Draw a box around the face
+                    cv2.rectangle(frame, (left, top), (right, bottom), (0, 0, 255), 2)
+
+                # Display the resulting image
+                cv2.imshow('Video', frame)
+
+                # Hit 'q' on the keyboard to quit!
+                if cv2.waitKey(1) & 0xFF == ord('q'):
+                    break
 
         # This will contain only the frames that contained a face (not -1 sums)
         validated_percents = []
-        for sum in frame_sums:
-            if sum != -1:
-                validated_percents.append(sum / len(self.profile_encoders))
+        for fsum in frame_sums:
+            if fsum != -1:
+                validated_percents.append(fsum / len(self.profile_encoders))
 
         # Set frames verified to length of validated sums
         frames_percentages = len(validated_percents)
 
         # obtain average percentage of face validation
-        percent = sum(frames_percentages) / len(frames_percentages)
+        percent = sum(validated_percents) / len(validated_percents)
 
         self.debugPrint("INFO: Video processing complete with verification of: " + str(percent * 100) + "%")
 
