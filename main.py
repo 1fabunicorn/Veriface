@@ -44,7 +44,7 @@ popup = True
 window = Tk()
 window.configure(bg="#f58625")
 window.geometry("543x300")
-window.title("Face Verifier")
+window.title("Face Verifier V1")
 videoButton = StringVar(value="Select Video")
 photoButton = StringVar(value="Select Photo Directory of format png or jpg")
 messageBox = StringVar()
