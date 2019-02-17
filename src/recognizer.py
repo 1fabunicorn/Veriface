@@ -20,8 +20,9 @@ class Recognizer:
     profile_images = []
     profile_encoders = []
 
-    debug = False
+    video_path = None
     video_frames = []
+    debug = False
 
     def __init__(self, debug=False):
         """
@@ -97,8 +98,9 @@ class Recognizer:
             self.debugPrint("ERROR: File not found!")
             return False
 
-        self.debugPrint( "INFO: Reading video...")
-        video = cv2.VideoCapture(file_path)
+        self.video_path = file_path
+        self.debugPrint("INFO: Reading video...")
+        video = cv2.VideoCapture(self.video_path)
 
         self.debugPrint("INFO: Processing frames...")
         self.video_frames = []
