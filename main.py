@@ -1,18 +1,18 @@
 from tkinter import Tk, Label, Button, filedialog
 from tkinter import *
 import os
-# from src import recognizer
+from src import recognizer
 
 
 
-
+req = recognizer.Recognizer(True)
 def getProofVideo():
     filename = filedialog.askopenfilename(initialdir="/home", title="Select file",
                                           filetypes=(("jpeg files", "*.mp4"), ("all files", "*.*")))
     if filename == ():
         pass
     else:
-        #recognizer.uploadVideo(filename)
+        recognizer.uploadVideo(filename)
         videoButton.set(os.path.basename(filename))
 
 def getPhoto():
