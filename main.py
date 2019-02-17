@@ -12,16 +12,19 @@ def getProofVideo():
     if filename == ():
         pass
     else:
-        recognizer.uploadVideo(filename)
+        req.uploadVideo(filename)
         videoButton.set(os.path.basename(filename))
 
 def getPhoto():
-    filename = filedialog.askopenfilename(initialdir="/home", title="Select file",
-                                          filetypes=(("jpeg files", "*.jpg"), ("all files", "*.*")))
-    if filename == ():
+    #filename = filedialog.askopenfilename(initialdir="/home", title="Select file",
+                                          #filetypes=(("jpeg files", "*.jpg"), ("all files", "*.*")))
+    fileDir = filedialog.askdirectory()
+    if fileDir == ():
         pass
     else:
-        photoButton.set(os.path.basename(filename))
+        req.createProfile("Verified Face", fileDir)
+        photoButton.set(os.path.basename(fileDir))
+
 
 
 window = Tk()
@@ -33,8 +36,8 @@ photoButton = StringVar(value="Select Photo Directory of format png or jpg")
 welcomeText = ("Please select a 'proof of life' video, and a historical photo \n"
                "that will be used to test if the two are simular\n"
                "For best performance, use a high resolution photo")
-Label(window, text=welcomeText, font=("ubuntu", 20), anchor=W, justify=CENTER).grid(row=0)
+Label(window, text=welcomeText, font=("ubuntu", 20), justify=CENTER, bg="SlateBlue2").grid(row=0, sticky=EW, columnspan=1)
 Button(window, textvariable=videoButton, command=getProofVideo).grid(row=1, column=0)
 Button(window, textvariable=photoButton, command=getPhoto).grid(row=2, column=0)
-
+Label(window)
 window.mainloop()
