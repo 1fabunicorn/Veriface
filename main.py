@@ -8,8 +8,8 @@ req = recognizer.Recognizer(True)
 
 
 def getProofVideo():
-    filename = filedialog.askopenfilename(initialdir="/home", title="Select file",
-                                          filetypes=(("jpeg files", "*.mp4"), ("all files", "*.*")))
+    filename = filedialog.askopenfilename(initialdir="./demo", title="Select file",
+                                          filetypes=(("mp4 files", "*.mp4"), ("all files", "*.*")))
     if filename == ():
         pass
     else:
@@ -35,11 +35,12 @@ def varify():
 
     message = ( u"\u2713" + "Accuracy of video: {}%\nPercentage of frames with a face {} = {} ".format(faceInFramePercent
         , (str(len(data["frames_percentages"])) + "/" + str(data["frames_total"])),
-        '{0:.3g}'.format((len(data["frames_percentages"]) / data["frames_total"]) * 100)))
+        '{0:.3g}'.format((len(data["frames_percentages"]) / (data["frames_total"])) * 100))) # - 1 to frames_total as the number itself
 
     messageBox.set(message)
 
-popup = False
+
+popup = True
 window = Tk()
 window.configure(bg="#f58625")
 window.geometry("543x300")
@@ -54,6 +55,6 @@ Label(window, text=welcomeText, font=("ubuntu", 15), justify=CENTER, bg="#17365d
 Button(window, textvariable=videoButton, command=getProofVideo).grid(row=1, column=0, pady=3)
 Button(window, textvariable=photoButton, command=getPhoto).grid(row=2, column=0, pady=3)
 Button(window, command=varify, text="Compute accuracy of video").grid(row=3, pady=3)
-Checkbutton(window, text="Show Popup Preview of the magic", variable=popup, bg="#f58625").grid(row=4, pady=3)
+# Checkbutton(window, text="Show Popup Preview of the magic", variable=popup, bg="#f58625").grid(row=4, pady=3)  # doesnt work
 Label(window, textvariable=messageBox, wraplength=450, font=("ubuntu", 12), bg="#f58625").grid(row=5, pady=3)
 window.mainloop()

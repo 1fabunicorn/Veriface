@@ -201,6 +201,7 @@ class Recognizer:
                 if cv2.waitKey(1) & 0xFF == ord('q'):
                     break
 
+
         # This will contain only the frames that contained a face (not -1 sums)
         validated_percents = []
         for fsum in frame_sums:
@@ -218,7 +219,9 @@ class Recognizer:
         results = {
             "percent": percent,
             "frames_verified": frames_verified,
-            "frames_total":  frames_total,
+            "frames_total":  frames_total - 1,  # without -1 it has one extra frame
             "frames_percentages": validated_percents
         }
+        cv2.waitKey(3000)  # wait 3 seconds to close cv window
+        cv2.destroyAllWindows()
         return results
