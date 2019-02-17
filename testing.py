@@ -1,4 +1,13 @@
 from src import recognizer
+import sys
 
-test = recognizer.Recognizer(debug=True)
-test.createProfile("Barack Obama", "/home/phillipsw1/github/BrickHackV/img")
+name = "Test Demo"
+
+if len(sys.argv) > 1:
+    test = recognizer.Recognizer(debug=True)
+    test.createProfile("Barack Obama", "/home/phillipsw1/Downloads/test")
+    test.uploadVideo("/home/phillipsw1/Downloads/test/" + sys.argv[1])
+    if len(sys.argv) > 2:
+        name = sys.argv[2]
+
+    test.verify(showPreview=True, title=name)
