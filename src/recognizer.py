@@ -120,7 +120,7 @@ class Recognizer:
         self.flag_video = True
         return True
 
-    def verify(self, showPreview=False):
+    def verify(self, showPreview=False, title="Test Demo"):
         """
         Compares the detected faces of each frame with list of uploaded encoders.
 
@@ -163,11 +163,12 @@ class Recognizer:
 
             # Matches temporarily stores the sums of each fade match with an encoder
             matches = []
+            percents = []
 
             for face_encoding in face_encodings:
                 # See if the face is a match for the known face(s)
                 matches.append(sum(fr.compare_faces(self.profile_encoders, face_encoding)))
-                print(len(matches))
+
             if not matches:
                 frame_sums.append(-1)
             else:
@@ -177,15 +178,21 @@ class Recognizer:
 
             if showPreview:
                 # Display the results
-                for (top, right, bottom, left) in face_locations:
+                for (top, right, bottom, left), match in zip(face_locations, matches):
                     # Scale back up face locations since the frame we detected in was scaled to 1/4 size
                     top *= int(1/scalar)
                     right *= int(1/scalar)
                     bottom *= int(1/scalar)
                     left *= int(1/scalar)
 
+                    bgr = (0, match / len(self.profile_encoders) * 255, 255-(match / len(self.profile_encoders) * 255))
+
                     # Draw a box around the face
-                    cv2.rectangle(frame, (left, top), (right, bottom), (0, 0, 255), 2)
+                    cv2.rectangle(frame, (left, top), (right, bottom), bgr, 2)
+
+                    cv2.rectangle(frame, (32, 16), (400, 64), (0, 0, 0), cv2.FILLED)
+                    font = cv2.FONT_HERSHEY_DUPLEX
+                    cv2.putText(frame, title + ": " + str(frame_sums[-1] / len(self.profile_encoders) * 100) + "%", (42, 50), font, 1.0, (255, 255, 255), 1)
 
                 # Display the resulting image
                 cv2.imshow('Video', frame)
