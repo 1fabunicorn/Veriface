@@ -77,7 +77,7 @@ class Recognizer:
         for path in path_buffer:
             if path.endswith(".jpg") or path.endswith(".png"):
                 self.debugPrint("INFO: Uploading '" + path + "' as encoder...")
-                self.profile_paths.append(self.profile_folder_path+path)
+                self.profile_paths.append(self.profile_folder_path+"/"+path)
                 self.profile_images.append(fr.load_image_file(self.profile_paths[-1]))
                 self.profile_encoders.append(fr.face_encodings(self.profile_images[-1])[0])
 
@@ -111,14 +111,14 @@ class Recognizer:
         self.debugPrint("INFO: Video at '" + file_path + "' was uploaded successfully!")
         return True
 
-    def verify(self):
+    def verify(self, showPreview=False):
         """
-        Get path for sample video.
+        Compares the detected faces of each frame with list of uploaded encoders.
 
         Parameters:
-           name (str): Full name of person's face being verified.
-           file_path (str): File path of reference image.
+           showPreview (bool): If true, will pop-up a window showing the face analyses.
         Returns:
            results (list):
                 frames_verified (int): The number of frames
         """
+
