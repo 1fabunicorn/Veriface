@@ -27,14 +27,16 @@ def getPhoto():
 
 
 def varify():
-    # messageBox.set(req.verify(showPreview=False))
-    data = {"percent": .90, "frame_percentages": [1,2,3,4,5,5], "frames_total": 45}
+    # data = {"percent": .90, "frame_percentages": [1,2,3,4,5,5], "frames_total": 45}
+
+    data = req.verify(showPreview=popup)
+
     faceInFramePercent = str(data["percent"] * 100)
 
-    # data = req.verify(showPreview=False)
     message = ( u"\u2713" + "Accuracy of video: {}%\nPercentage of frames with a face {} = {} ".format(faceInFramePercent
-        , (str(len(data["frame_percentages"])) + "/" + str(data["frames_total"])),
-        '{0:.3g}'.format((len(data["frame_percentages"]) / data["frames_total"]) * 100)))
+        , (str(len(data["frames_percentages"])) + "/" + str(data["frames_total"])),
+        '{0:.3g}'.format((len(data["frames_percentages"]) / data["frames_total"]) * 100)))
+
     messageBox.set(message)
 
 popup = False

@@ -221,3 +221,4 @@ class Recognizer:
             "frames_total":  frames_total,
             "frames_percentages": validated_percents
         }
+        return results
